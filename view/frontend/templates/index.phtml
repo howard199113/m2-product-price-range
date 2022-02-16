@@ -1,0 +1,129 @@
+<style media="screen">
+  .price-range-form .field{
+    display: inline-block;
+  }
+  .price-range-form .form-submit{
+    margin-top: 10px;
+  }
+  .render-table table > thead > tr > th, .render-table table > tbody > tr > td{
+    border: 1px solid;
+  }
+</style>
+<form class="price-range-form" data-mage-init='{
+  "validation": {
+    "rules": {
+      "min-price": {
+        "required": true,
+        "validate-greater-than-zero": true
+
+      },
+      "max-price": {
+        "required": true,
+        "validate-greater-than-zero": true,
+        "validate-number-range": true
+
+      }
+    }
+}}' method="post">
+  <div class="field">
+    <label for="min-price">
+      <span><?php echo __('Minimum Price') ?></span>
+    </label>
+    <input id="min-price" type="text" name="min-price">
+  </div>
+  <div class="field">
+    <label for="max-price">
+      <span><?php echo __('Maximum Price') ?></span>
+    </label>
+    <input id="max-price" type="text" name="max-price">
+  </div>
+  <div class="field">
+    <label for="sort-by">
+      <span><?php echo __('Sort By') ?></span>
+    </label>
+    <select class="" name="sort-by">
+      <option value="asc"><?php echo __('Asc') ?></option>
+      <option value="desc"><?php echo __('Desc') ?></option>
+    </select>
+  </div>
+  <div class="form-submit">
+    <button type="submit" name="button"><?php echo __('Search') ?></button>
+  </div>
+</form>
+
+<div class="error-message" style="display: none;">
+  <p style="color: red;">Oops, backend validation failed.</p>
+</div>
+
+<div class="render-table" style="display: none;">
+  <table>
+      <thead>
+        <tr>
+          <th class="col"><?php echo __("Thumbnail");?></th>
+          <th class="col"><?php echo __("SKU");?></th>
+          <th class="col"><?php echo __("Name");?></th>
+          <th class="col"><?php echo __("Qty");?></th>
+          <th class="col"><?php echo __("Price");?></th>
+          <th class="col"><?php echo __("Link");?></th>
+        </tr>
+      </thead>
+      <tbody>
+      </tbody>
+  </table>
+</div>
+
+<script type="text/javascript">
+  require([
+    'jquery',
+    'mage/validation'
+  ], function($){
+
+    $('.price-range-form').submit(function(event){
+      event.preventDefault();
+      var formValidation = $('.price-range-form').validation('isValid');
+
+      if (formValidation) {
+        event.preventDefault();
+        var minPrice = $("input[name='min-price']").val();
+        var maxPrice = $("input[name='max-price']").val();
+        var sortBy = $("input[name='sort-by']").val();
+        console.log($(this).serialize());
+        // AJAX call
+        $.ajax({
+          url: "<?= $block->getSubmitUrl(); ?>",
+          type: 'POST',
+          data: $(this).serialize(),
+          showLoader: true
+        }).done(function(responses){
+          console.log(responses);
+          if(responses.length > 0){
+            $('.error-message').hide();
+            $('.render-table').show();
+            var productTemplate = '';
+            $.each(responses, function(i, product){
+              console.log(product.name);
+              productTemplate += '<tr>';
+              productTemplate += '<td style="max-width: 100px;">' + '<img src="' + product.thumbnail + '">' + '</td>';
+              productTemplate += '<td>' + product.sku + '</td>';
+              productTemplate += '<td>' + product.name + '</td>';
+              productTemplate += '<td>' + product.qty + '</td>';
+              productTemplate += '<td>' + product.price + '</td>';
+              productTemplate += '<td>' + '<a href="' + product.url + '" target="_blank">' + "Open" + '</a>' + '</td>';
+              productTemplate += '</tr>';
+            })
+            $('.render-table table tbody').empty().append(productTemplate);
+          }else{
+            $('.render-table').hide();
+            $('.error-message').show();
+          }
+
+        });
+      }else{
+        console.log('Validation failed!!');
+        $('.render-table table tbody').empty();
+        $('.render-table').hide();
+      }
+
+    });
+  })
+</script>

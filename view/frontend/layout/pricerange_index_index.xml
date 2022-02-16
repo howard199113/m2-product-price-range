@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+  <update handle="customer_account"/>
+  <body>
+    <referenceContainer name="content">
+        <block class="Howard\PriceRange\Block\Index" name="pricerange_index_index" template="Howard_PriceRange::index.phtml" cacheable="false"/>
+    </referenceContainer>
+  </body>
+</page>
