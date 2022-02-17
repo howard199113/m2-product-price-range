@@ -109,28 +109,34 @@
           showLoader: true
         }).done(function(responses){
           // Callback
-          if(responses.length > 0){
-            $('.error-message, .none-message').hide();
-            $('.render-table').show();
+          if(responses){
+            if(responses.length > 0){
+              $('.error-message, .none-message').hide();
+              $('.render-table').show();
 
-            // Construct Product Table
-            var productTemplate = '';
-            $.each(responses, function(i, product){
-              productTemplate += '<tr>';
-              productTemplate += '<td style="max-width: 100px;">' + '<img src="' + product.thumbnail + '">' + '</td>';
-              productTemplate += '<td>' + product.sku + '</td>';
-              productTemplate += '<td>' + product.name + '</td>';
-              productTemplate += '<td>' + product.qty + '</td>';
-              productTemplate += '<td>' + product.price + '</td>';
-              productTemplate += '<td>' + '<a href="' + product.url + '" target="_blank">' + "Open" + '</a>' + '</td>';
-              productTemplate += '</tr>';
-            })
-            $('.render-table table tbody').empty().append(productTemplate);
+              // Construct Product Table
+              var productTemplate = '';
+              $.each(responses, function(i, product){
+                productTemplate += '<tr>';
+                productTemplate += '<td style="max-width: 100px;">' + '<img src="' + product.thumbnail + '">' + '</td>';
+                productTemplate += '<td>' + product.sku + '</td>';
+                productTemplate += '<td>' + product.name + '</td>';
+                productTemplate += '<td>' + product.qty + '</td>';
+                productTemplate += '<td>' + product.price + '</td>';
+                productTemplate += '<td>' + '<a href="' + product.url + '" target="_blank">' + "Open" + '</a>' + '</td>';
+                productTemplate += '</tr>';
+              })
+              $('.render-table table tbody').empty().append(productTemplate);
 
+            }else{
+              // When No Returned Results
+              $('.render-table').hide();
+              $('.none-message').show();
+            }
           }else{
             // When No Returned Results
             $('.render-table').hide();
-            $('.none-message').show();
+            $('.error-message').show();
           }
         });
       }else{

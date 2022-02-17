@@ -25,7 +25,7 @@ class Search extends \Magento\Framework\App\Action\Action
 
 
   /**
-   * Get product collection filtered by price
+   * Get product collection filter
    *
    * @param boolean $toArray
    * @return Magento\Catalog\Model\ResourceModel\Product\Collection|array
@@ -50,13 +50,17 @@ class Search extends \Magento\Framework\App\Action\Action
       return false;
     }
     if ($sort_by) {
-      switch($sort_by){
-        case "asc":
-          $sort = "ASC";
-          break;
-        case "desc":
-          $sort = "DESC";
-          break;
+      if($sort_by == "asc" || $sort_by == "desc"){
+        switch($sort_by){
+          case "asc":
+            $sort = "ASC";
+            break;
+          case "desc":
+            $sort = "DESC";
+            break;
+        }
+      }else{
+        return false;
       }
     }else{
       return false;
@@ -95,7 +99,7 @@ class Search extends \Magento\Framework\App\Action\Action
   }
 
   /**
-   * Extract data from product collection to array
+   * Extract collection and return Json
    *
    * @return array
    */
