@@ -1,14 +1,19 @@
 <style media="screen">
+  .price-range-form{
+    margin-bottom: 20px;
+  }
   .price-range-form .field{
     display: inline-block;
   }
   .price-range-form .form-submit{
-    margin-top: 10px;
+    display: inline-block;
   }
   .render-table table > thead > tr > th, .render-table table > tbody > tr > td{
     border: 1px solid;
   }
 </style>
+
+<!-- Form -->
 <form class="price-range-form" data-mage-init='{
   "validation": {
     "rules": {
@@ -50,11 +55,19 @@
     <button type="submit" name="button"><?php echo __('Search') ?></button>
   </div>
 </form>
+<!-- End Form -->
 
+<!-- When search result 0 -->
+<div class="none-message" style="display: none;">
+  <p style="color: red;">No products within this price range.</p>
+</div>
+
+<!-- Backend Validation Error Message -->
 <div class="error-message" style="display: none;">
   <p style="color: red;">Oops, backend validation failed.</p>
 </div>
 
+<!-- Product Table -->
 <div class="render-table" style="display: none;">
   <table>
       <thead>
@@ -67,41 +80,42 @@
           <th class="col"><?php echo __("Link");?></th>
         </tr>
       </thead>
+
       <tbody>
+        <!-- Body Content Append by JS -->
       </tbody>
   </table>
 </div>
+<!-- End Product Table -->
 
 <script type="text/javascript">
   require([
+    // Require Library
     'jquery',
     'mage/validation'
   ], function($){
-
     $('.price-range-form').submit(function(event){
       event.preventDefault();
       var formValidation = $('.price-range-form').validation('isValid');
 
       if (formValidation) {
         event.preventDefault();
-        var minPrice = $("input[name='min-price']").val();
-        var maxPrice = $("input[name='max-price']").val();
-        var sortBy = $("input[name='sort-by']").val();
-        console.log($(this).serialize());
-        // AJAX call
+
+        // AJAX Begin
         $.ajax({
           url: "<?= $block->getSubmitUrl(); ?>",
           type: 'POST',
           data: $(this).serialize(),
           showLoader: true
         }).done(function(responses){
-          console.log(responses);
+          // Callback
           if(responses.length > 0){
-            $('.error-message').hide();
+            $('.error-message, .none-message').hide();
             $('.render-table').show();
+
+            // Construct Product Table
             var productTemplate = '';
             $.each(responses, function(i, product){
-              console.log(product.name);
               productTemplate += '<tr>';
               productTemplate += '<td style="max-width: 100px;">' + '<img src="' + product.thumbnail + '">' + '</td>';
               productTemplate += '<td>' + product.sku + '</td>';
@@ -112,14 +126,15 @@
               productTemplate += '</tr>';
             })
             $('.render-table table tbody').empty().append(productTemplate);
-          }else{
-            $('.render-table').hide();
-            $('.error-message').show();
-          }
 
+          }else{
+            // When No Returned Results
+            $('.render-table').hide();
+            $('.none-message').show();
+          }
         });
       }else{
-        console.log('Validation failed!!');
+        // Frontend Validation Failed
         $('.render-table table tbody').empty();
         $('.render-table').hide();
       }

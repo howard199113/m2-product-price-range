@@ -85,12 +85,13 @@ class Search extends \Magento\Framework\App\Action\Action
     $this->collection = $collection;
     // End Product Collection Filter
 
-
+    // Convert Data into array Json and return to frontend
     if ($toArray) {
       return $this->productCollectionToArray();
     } else {
       return $this->collection;
     }
+
   }
 
   /**
